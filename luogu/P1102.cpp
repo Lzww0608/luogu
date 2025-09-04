@@ -19,37 +19,35 @@
 #include <ios>
 #include <list>
 #include <cstdint>
-#include <limits>
-#include <limits.h>
 
 using i64 = std::int64_t;
-
-constexpr i64 N = 601;
 
 int main() {
 	std::ios::sync_with_stdio(false);
 	std::cin.tie(nullptr);
 
 	
-	int n, w;
-	std::cin >> n >> w;
+	int n, c;
+	std::cin >> n >> c;
 
-	std::vector<int> a(n);
+	std::vector<i64> a(n, 0);
 	for (int i = 0; i < n; i++) {
 		std::cin >> a[i];
 	}
 
-	std::array<int, N> cnt{};
-	for (int i = 0; i < n; i++) {
-		int x = a[i];
-		cnt[x]++;
-		int j = N - 1, sum = 0;
-		while (sum < std::max(1, (i + 1) * w / 100)) {
-			sum += cnt[j];
-			j--;
+	std::ranges::sort(a);
+	i64 ans = 0;
+	for (int i = 0, l = 0, r = 0; i < n && l < n; i++) {
+		while (l < n && a[l] - a[i] < c) {
+			l++;
 		}
-		std::cout << j + 1 << " ";
-	}
 
-	return 0;
+		while (r < n && a[r] - a[i] <= c) {
+			r++;
+		}
+		if (l < n && a[l] - a[i] == c) {
+			ans += r - l;
+		}
+	}
+	std::cout << ans << std::endl;
 }

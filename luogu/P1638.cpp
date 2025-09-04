@@ -24,32 +24,37 @@
 
 using i64 = std::int64_t;
 
-constexpr i64 N = 601;
+constexpr i64 N = 1'000'000;
 
 int main() {
 	std::ios::sync_with_stdio(false);
 	std::cin.tie(nullptr);
 
 	
-	int n, w;
-	std::cin >> n >> w;
-
-	std::vector<int> a(n);
+	int n, m;
+	std::cin >> n >> m;
+	std::vector<i64> a(n, 0);
 	for (int i = 0; i < n; i++) {
 		std::cin >> a[i];
 	}
 
-	std::array<int, N> cnt{};
-	for (int i = 0; i < n; i++) {
-		int x = a[i];
-		cnt[x]++;
-		int j = N - 1, sum = 0;
-		while (sum < std::max(1, (i + 1) * w / 100)) {
-			sum += cnt[j];
-			j--;
+	std::unordered_map<i64, i64> cnt;
+	int ans = INT_MAX, left = 0, right = 0;
+	for (int l = 0, r = 0; r < n; r++) {
+		cnt[a[r]]++;
+
+		while (cnt.size() == m) {
+			if (ans > r - l + 1) {
+				ans = r - l + 1;
+				left = l;
+				right = r;
+			}
+			if (cnt[a[l]]--; cnt[a[l]] == 0) {
+				cnt.erase(a[l]);
+			}
+			l++;
 		}
-		std::cout << j + 1 << " ";
 	}
 
-	return 0;
+	std::cout << left + 1 << " " << right + 1 << std::endl;
 }
