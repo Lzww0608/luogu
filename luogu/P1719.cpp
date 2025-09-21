@@ -28,42 +28,12 @@
 #include <memory>
 #include <condition_variable>
 #include <thread>
-#include <random>
 
 using i64 = std::int64_t;
-using pii = std::pair<i64, i64>;
 
 constexpr i64 N = 100'001;
 constexpr i64 MOD = 10007;
 
-
-i64 merge(std::vector<int>& a, int l, int r) {
-	if (l >= r) return 0;
-	i64 cnt = 0;
-	int mid = l + ((r - l) >> 1);
-	cnt += merge(a, l, mid);
-	cnt += merge(a, mid + 1, r);
-	std::vector<int> tmp(r - l + 1, 0);
-
-	for (int i = l, j = mid + 1; i <= mid; i++) {
-		while (j <= r && a[i] > a[j]) {
-			j++;
-		}
-		cnt += j - mid - 1;
-	}
-
-	int i = l, j = mid + 1, k = 0;
-	while (i <= mid || j <= r) {
-		if (j > r || i <= mid && a[i] <= a[j]) {
-			tmp[k++] = a[i++];
-		} else {
-			tmp[k++] = a[j++];
-		}
-	}
-	std::copy(tmp.begin(), tmp.end(), a.begin() + l);
-
-	return cnt;
-}
 
 int main() {
 	std::ios::sync_with_stdio(false);
@@ -71,12 +41,31 @@ int main() {
 
 	int n;
 	std::cin >> n;
-	std::vector<int> a(n);
-	for (int& x : a) {
-		std::cin >> x;
+	std::vector<std::vector<int>> a (n, std::vector<int> (n, 0));
+	std::vector<std::vector<int>> pre (n + 1, std::vector<int> (n + 1, 0));
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			std::cin >> a[i][j];
+			pre[i + 1][j + 1] = pre[i + 1][j] + pre[i][j + 1] - pre[i][j] + a[i][j];
+		}
 	}
 
-	std::cout << merge(a, 0, n - 1) << "\n";
+	int ans = 0;
+	for (int i = 0; i < n; i++) {
+		for (int j = i; j < n; j++) {
+			int mn = 0;
+			for (int k = 0; k < n; k++) {
+				int cur = pre[j + 1][k + 1] - pre[i][k + 1];
+				ans = std::max(ans, cur - mn);
+				mn = std::min(mn, cur);
+			}
+		}
+	}
+
+	std::cout << ans << "\n";
 
 	return 0;
 }
+
+
+

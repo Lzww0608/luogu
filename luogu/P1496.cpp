@@ -28,42 +28,12 @@
 #include <memory>
 #include <condition_variable>
 #include <thread>
-#include <random>
 
 using i64 = std::int64_t;
-using pii = std::pair<i64, i64>;
 
 constexpr i64 N = 100'001;
 constexpr i64 MOD = 10007;
 
-
-i64 merge(std::vector<int>& a, int l, int r) {
-	if (l >= r) return 0;
-	i64 cnt = 0;
-	int mid = l + ((r - l) >> 1);
-	cnt += merge(a, l, mid);
-	cnt += merge(a, mid + 1, r);
-	std::vector<int> tmp(r - l + 1, 0);
-
-	for (int i = l, j = mid + 1; i <= mid; i++) {
-		while (j <= r && a[i] > a[j]) {
-			j++;
-		}
-		cnt += j - mid - 1;
-	}
-
-	int i = l, j = mid + 1, k = 0;
-	while (i <= mid || j <= r) {
-		if (j > r || i <= mid && a[i] <= a[j]) {
-			tmp[k++] = a[i++];
-		} else {
-			tmp[k++] = a[j++];
-		}
-	}
-	std::copy(tmp.begin(), tmp.end(), a.begin() + l);
-
-	return cnt;
-}
 
 int main() {
 	std::ios::sync_with_stdio(false);
@@ -71,12 +41,24 @@ int main() {
 
 	int n;
 	std::cin >> n;
-	std::vector<int> a(n);
-	for (int& x : a) {
-		std::cin >> x;
+	std::vector<i64> a(n), b(n);
+
+	for (int i = 0; i < n; i++) {
+		std::cin >> a[i] >> b[i];
+	} 
+
+	std::ranges::sort(a);
+	std::ranges::sort(b);
+
+	i64 ans = 0;
+	for (int i = 0; i < n; i++) {
+		ans += b[i] - a[i];
+		if (i + 1 < n && b[i] > a[i + 1]) {
+			ans -= b[i] - a[i + 1];
+		}
 	}
 
-	std::cout << merge(a, 0, n - 1) << "\n";
+	std::cout << ans << "\n";
 
 	return 0;
 }

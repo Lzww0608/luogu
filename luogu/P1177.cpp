@@ -36,33 +36,26 @@ using pii = std::pair<i64, i64>;
 constexpr i64 N = 100'001;
 constexpr i64 MOD = 10007;
 
+void quickSort(std::vector<int>& a, int l, int r) {
+	if (l >= r) return;
 
-i64 merge(std::vector<int>& a, int l, int r) {
-	if (l >= r) return 0;
-	i64 cnt = 0;
-	int mid = l + ((r - l) >> 1);
-	cnt += merge(a, l, mid);
-	cnt += merge(a, mid + 1, r);
-	std::vector<int> tmp(r - l + 1, 0);
-
-	for (int i = l, j = mid + 1; i <= mid; i++) {
-		while (j <= r && a[i] > a[j]) {
-			j++;
-		}
-		cnt += j - mid - 1;
-	}
-
-	int i = l, j = mid + 1, k = 0;
-	while (i <= mid || j <= r) {
-		if (j > r || i <= mid && a[i] <= a[j]) {
-			tmp[k++] = a[i++];
+	int pivot = a[l + rand() % (r - l + 1)];
+	int i = l, j = l, k = r + 1;
+	while (i < k) {
+		if (a[i] > pivot) {
+			k--;
+			std::swap(a[k], a[i]);
+		} else if (a[i] < pivot) {
+			std::swap(a[i], a[j]);
+			i++; j++;
 		} else {
-			tmp[k++] = a[j++];
+			i++;
 		}
 	}
-	std::copy(tmp.begin(), tmp.end(), a.begin() + l);
 
-	return cnt;
+	quickSort(a, l, j);
+	quickSort(a, i, r);
+	return;
 }
 
 int main() {
@@ -76,7 +69,10 @@ int main() {
 		std::cin >> x;
 	}
 
-	std::cout << merge(a, 0, n - 1) << "\n";
+	quickSort(a, 0, n - 1);
+	for (int x : a) {
+		std::cout << x << " ";
+	}
 
 	return 0;
 }

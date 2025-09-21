@@ -28,55 +28,39 @@
 #include <memory>
 #include <condition_variable>
 #include <thread>
-#include <random>
 
 using i64 = std::int64_t;
-using pii = std::pair<i64, i64>;
 
 constexpr i64 N = 100'001;
 constexpr i64 MOD = 10007;
 
 
-i64 merge(std::vector<int>& a, int l, int r) {
-	if (l >= r) return 0;
-	i64 cnt = 0;
-	int mid = l + ((r - l) >> 1);
-	cnt += merge(a, l, mid);
-	cnt += merge(a, mid + 1, r);
-	std::vector<int> tmp(r - l + 1, 0);
-
-	for (int i = l, j = mid + 1; i <= mid; i++) {
-		while (j <= r && a[i] > a[j]) {
-			j++;
-		}
-		cnt += j - mid - 1;
-	}
-
-	int i = l, j = mid + 1, k = 0;
-	while (i <= mid || j <= r) {
-		if (j > r || i <= mid && a[i] <= a[j]) {
-			tmp[k++] = a[i++];
-		} else {
-			tmp[k++] = a[j++];
-		}
-	}
-	std::copy(tmp.begin(), tmp.end(), a.begin() + l);
-
-	return cnt;
-}
-
 int main() {
 	std::ios::sync_with_stdio(false);
 	std::cin.tie(nullptr);
 
-	int n;
-	std::cin >> n;
-	std::vector<int> a(n);
-	for (int& x : a) {
-		std::cin >> x;
+	int n, p;
+	std::cin >> n >> p;
+	std::vector<i64> a(n + 1, 0);
+	for (int i = 0; i < n; i++) {
+		std::cin >> a[i];
 	}
 
-	std::cout << merge(a, 0, n - 1) << "\n";
+	int x, y, z;
+	std::vector<int> dif(n + 1, 0);
+	for (int i = 0; i < p; i++) {
+		std::cin >> x >> y >> z;
+		dif[x - 1] += z;
+		dif[y] -= z;
+	}
+
+	i64 cur = 0, ans = INT64_MAX;
+	for (int i = 0; i < n; i++) {
+		cur += dif[i];
+		ans = std::min(ans, cur + a[i]);
+	}
+
+	std::cout << ans << "\n";
 
 	return 0;
 }
